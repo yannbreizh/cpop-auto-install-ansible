@@ -1,0 +1,58 @@
+# This file contains main variables used to deploy the 2 hosts in a cPoP.
+
+#
+# select_host:
+#   - this variable defines wich host is to be configured
+#   - allowed values: host1, host2
+select_host: host1
+
+#
+# global variables common to both hosts
+#
+datadisk: sdb
+#datadisk: sdb
+
+
+#
+# host1 variables
+#
+host1_bmc_hostname: auv52host1bmc
+host1_bmc_fqdn: auv52host1bmc.auv52.pre.cdn.orange.com
+host1_bmc_ipnm: 172.26.5.17/29
+host1_bmc_ip_gw: 172.26.5.22
+host1_bmc_login: Administrator
+host1_bmc_pwd: 825XVP4P
+host1_bmc_license: 0
+ 
+host1_host_hostname: auv52host1
+host1_host_fqdn: auv52host1.auv52.pre.cdn.orange.com
+host1_host_ip4ad: 192.168.10.35
+host1_host_ip4nm: 255.255.255.240
+host1_host_ip_gw: 192.168.10.1
+#host1_host_ipnm: 172.26.9.149/28
+#host1_host_ip_gw: 172.26.9.145
+ 
+host1_vcache1_hostname: auv52vcache1
+host1_vcache1_fqdn: auv52vcache1.auv52.pre.cdn.orange.com
+host1_vcache1_ipnm_mgmt: 172.26.9.146/28
+host1_vcache1_mac_mgmt: 00:50:C3:FF:09:92
+host1_vcache1_ipnm_client: 90.84.143.178/28
+host1_vcache1_mac_client: 00:50:C3:FF:8F:B2
+host1_vcache1_ipnm_intra: 192.168.255.9/30
+host1_vcache1_mac_intra: 00:50:C3:FF:FF:09
+host1_vcache1_ip_gw: 90.84.143.177
+ 
+host1_ppvcache1_hostname: auv54vcache1
+host1_ppvcache1_fqdn: auv54vcache1.auv54.pre.cdn.orange.com
+host1_ppvcache1_ipnm_mgmt: 172.26.9.151/28
+host1_ppvcache1_mac_mgmt: 00:50:C3:FF:09:97
+host1_ppvcache1_ipnm_client: 90.84.143.183/28
+host1_ppvcache1_mac_client: 00:50:C3:FF:8F:B7
+host1_ppvcache1_ip_gw: 90.84.143.177
+ 
+host1_vrf1_hostname: auv52vrf1
+host1_vrf1_fqdn: auv52vrf1.auv52.pre.cdn.orange.com
+host1_vrf1_ipnm_client: 90.84.143.182/28
+host1_vrf1_mac_client: 00:50:C3:FF:8F:B6
+host1_vrf1_ip_gw: 90.84.143.177
+

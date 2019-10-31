@@ -1,0 +1,169 @@
+#
+# This file lists the very first tasks that are executed just after the server has been installed with the Debian preseed ISO file.
+# These tasks are common to both host1 and host2
+#
+---
+
+#
+# package management
+#
+
+- name: Configure debian/proxmox repos
+  shell:
+    cmd: |
+      sudo bash -c 'cat << EOF > /etc/apt/sources.list
+      ## NEW CONFIGURATION FOR USING THE OINIS REPO:
+      # regular updates
+      deb [trusted=yes] http://90.84.143.215/debiandeb10/ ./
+      # security updates
+      deb [trusted=yes] http://90.84.143.215/debiansec10/ ./
+      # pve enterprise
+      deb [trusted=yes] http://90.84.143.215/pvedeb6.0/ ./
+      EOF'
+
+      sudo bash -c 'cat << EOF > /etc/apt/sources.list.d/pve-enterprise.list
+      ## OLD CONFIGURATION:
+      #deb https://enterprise.proxmox.com/debian buster pve-enterprise
+      EOF'
+
+- name: Update repositories
+  become: yes
+  apt:
+    update_cache: yes
+    dpkg_options: 'force-confold,force-confdef'
+
+- name: Upgrade repositories
+  become: yes
+  apt:
+    upgrade: yes
+    dpkg_options: 'force-confold,force-confdef'
+
+- name: "Install PVE packages. THIS NAY TAKE A WHILE..."
+  become: yes
+  apt:
+    name: "{{ pve_packages }}"
+    dpkg_options: 'force-confold,force-confdef'
+  vars:
+    pve_packages:
+    - proxmox-ve
+    - postfix
+    - open-iscsi
+
+- name: Remove "os-prober" package (recommended by Proxmox)
+  become: yes
+  apt:
+    name: os-prober
+    state: absent
+    dpkg_options: 'force-confold,force-confdef'
+
+- name: Install additional packages
+  become: yes
+  apt:
+    name: "{{ add_packages }}"
+    dpkg_options: 'force-confold,force-confdef'
+  vars:
+    add_packages:
+    - glusterfs-server
+    - lshw
+    - tmux
+    - htop
+    - atop
+    - iftop
+    - nload
+    - curl
+    - ethtool
+    - iproute2
+    - ntpdate
+    - parted
+
+#
+# disks management
+#
+
+- name: Config disks
+  become: yes
+  parted: device=/dev/sda unit=MiB
+  register: sdb_info
+
+- debug:
+    msg:
+    - "Data disk is: {{ datadisk }}"
+
+- name: "Config disk: create a new empty GPT partition table on disk {{ datadisk }}"
+  become: yes
+  parted:
+    device: /dev/{{ datadisk }}
+    label: gpt
+    number: 1
+    state: present
+    
+- name: "Config disk: create an ext4 file system on {{ datadisk }}"
+  become: yes
+  filesystem:
+    fstype: ext4
+    device: /dev/{{ datadisk }}
+    
+- name: "Mount /mnt/data on {{ datadisk }}"
+  become: yes
+  mount:
+    path: /mnt/data
+    src: /dev/{{ datadisk }}
+    fstype: mounted
+    state: present
+
+#
+# PVE management
+#
+
+- name: Disable login subscription message
+  become: yes
+  replace:
+    path: /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js
+    regexp: "data.status !== 'Active'"
+    replace: "false"
+
+#
+# network management
+#
+
+- name: Config DNS servers
+  become: yes
+  shell: |
+    echo "nameserver 193.251.253.128" >> /etc/resolv.conf
+    echo "nameserver 193.251.253.129" >> /etc/resolv.conf
+
+- name: Config NTP servers 1
+  become: yes
+  replace:
+    path: /etc/default/ntpdate
+    regexp: 'NTPDATE_USE_NTP_CONF=yes'
+    replace: 'NTPDATE_USE_NTP_CONF=no'
+
+- name: Config NTP servers 2
+  become: yes
+  replace:
+    backup: yes
+    path: /etc/default/ntpdate
+    regexp: 'NTPSERVERS=.*'
+    replace: 'NTPSERVERS="ntp1.opentransit.net ntp2.opentransit.net"'
+  
+
+- name: Collect all facts
+  become: yes
+  setup:
+    gather_subset:
+      - '!all'
+      - '!any'
+  register: allfacts
+
+
+- debug:
+    msg:
+    - "allfacts: {{ ansible_facts | dict2items | selectattr('value.ipv4', 'defined') | map(attribute='value') | list }}"
+
+- name: define traditional ethernet facts
+  set_fact:
+    ansible_eth: "{% set ansible_eth = ansible_eth|default([]) + [hostvars[inventory_hostname]['ansible_' + item]] %}{{ ansible_eth|list }}"
+  when: hostvars[inventory_hostname]['ansible_' + item]['type'] == 'ether'
+  with_items:
+    - "{{ hostvars[inventory_hostname]['ansible_interfaces'] }}"

@@ -1,0 +1,4 @@
+- debug:
+    msg:
+    - "Data disk is: {{ datadisk }}"
+    - "Host1 IP is: {{ host1_host_ip4ad }}"
