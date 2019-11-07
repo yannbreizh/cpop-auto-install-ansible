@@ -1,0 +1,15 @@
+[za]
+cpt01host1 ansible_ssh_host=172.26.8.165
+jnb01host1 ansible_ssh_host=172.26.8.181
+
+[cpt]
+cpt01host1 ansible_ssh_host=172.26.8.165
+
+[jnb]
+jnb01host1 ansible_ssh_host=172.26.8.181
+
+[all:vars]
+ansible_connection=ssh
+ansible_user=ansible
+ansible_ssh_pass=ansible
+ansible_become=yes

@@ -1,0 +1,40 @@
+#
+# This file lists the tasks that are executed on the Proxmox VE cluster of a cPoP cluster to instantiate all VMs templates.
+#
+---
+
+# Upload debian template for the vrf container
+
+#- name: Upload debian template
+#  become: yes
+#  shell: |
+#    pveam update
+#    pveam download local debian-10.0-standard_10.0-1_amd64.tar.gz
+
+# Create the vrf container template
+- name: Create the vrf container template
+  become: yes
+  proxmox:
+    vmid: 105
+    node: "{{ host1_host_hostname }}"
+    api_user: root@pam
+    api_password: ProxmoxCp0p
+    api_host: "{{ host1_host_fqdn }}"
+    password: ProxmoxCp0p
+    hostname: "{{ host1_host_hostname }}"
+    cores: 1
+    #cpus: "{{ host1_vm3_cpu }}"
+    disk: "{{ host1_vm3_osdisk_size }}"
+    #ip_address: "{{ host1_vrf1_ip4ad_client }}"
+    memory: "{{ host1_vm3_ram }}"
+    nameserver: "{{ DNS_primary_ip4 }}"
+    onboot: yes
+    #pubkey:
+    searchdomain: "{{ DNS_searchdomain }}"
+    storage: local-data
+    #ostemplate: 'Shared:debian-10.0-standard_10.0-1_amd64.tar.gz'
+    ostemplate: 'local:vztmpl/debian-10.0-standard_10.0-1_amd64.tar.gz'
+    #netif: '{"net0":"name=eth0,gw=190.84.143.225,ip=90.84.143.230/28,bridge=vmbr0"}'
+    netif: '{"net0":"name=eth0,gw=190.84.143.225,ip={{ host1_vrf1_ip4ad_client }}/28,bridge=vmbr0"}'
+    
+

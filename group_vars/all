@@ -1,0 +1,132 @@
+###
+# global variables for the cPoP
+
+datacenter: cluster-cpop
+
+host1_bmc_hostname: cpt01host1bmc
+host1_bmc_fqdn: cpt01host1bmc.cpt01.mea.cdn.orange.com
+host1_bmc_ip4ad: 172.26.5.146
+host1_bmc_ip4nm: 255.255.255.248
+host1_bmc_ip4gw: 172.26.5.145
+host1_bmc_login: Administrator
+host1_bmc_pwd: XB2XMG79
+host1_bmc_license: 0
+ 
+host1_host_hostname: cpt01host1
+host1_host_fqdn: cpt01host1.cpt01.mea.cdn.orange.com
+host1_host_ip4ad: 172.26.8.165
+host1_host_ip4nm: 255.255.255.240
+host1_host_ip4gw: 172.26.8.161
+ 
+host1_vcache1_hostname: cpt01vcache1
+host1_vcache1_fqdn: cpt01vcache1.cpt01.mea.cdn.orange.com
+host1_vcache1_ip4ad_mgmt: 172.26.8.162
+host1_vcache1_ip4nm_mgmt: 255.255.255.240
+host1_vcache1_mac_mgmt: 00:50:C3:1B:08:A2
+host1_vcache1_ip4ad_client: 90.84.143.226
+host1_vcache1_ip4nm_client: 255.255.255.240
+host1_vcache1_mac_client: 00:50:C3:1B:8F:E2
+host1_vcache1_ip4ad_intra: 192.168.27.1
+host1_vcache1_ip4nm_intra: 255.255.255.252
+host1_vcache1_mac_intra: 00:50:C3:1B:1B:01
+host1_vcache1_ip4gw: 90.84.143.225
+ 
+host1_ppvcache1_hostname: cpt51vcache1
+host1_ppvcache1_fqdn: cpt51vcache1.cpt51.pre.cdn.orange.com
+host1_ppvcache1_ip4ad_mgmt: 172.26.8.167
+host1_ppvcache1_ip4nm_mgmt: 255.255.255.240
+host1_ppvcache1_mac_mgmt: 00:50:C3:1B:08:A7
+host1_ppvcache1_ip4ad_client: 90.84.143.231
+host1_ppvcache1_ip4nm_client: 255.255.255.240
+host1_ppvcache1_mac_client: 00:50:C3:1B:8F:E7
+host1_ppvcache1_ip4gw: 90.84.143.225
+ 
+host1_vrf1_hostname: cpt01vrf1
+host1_vrf1_fqdn: cpt01vrf1.cpt01.mea.cdn.orange.com
+host1_vrf1_ip4ad_client: 90.84.143.232
+host1_vrf1_ip4nm_client: 255.255.255.240
+host1_vrf1_mac_client: 00:50:C3:1B:8F:E6
+host1_vrf1_ip4gw: 90.84.143.225
+ 
+host2_bmc_hostname: cpt01host2bmc
+host2_bmc_fqdn: cpt01host2bmc.cpt01.mea.cdn.orange.com
+host2_bmc_ip4ad: 172.26.5.147
+host2_bmc_ip4nm: 255.255.255.248
+host2_bmc_ip4gw: 172.26.5.145
+host2_bmc_login: Administrator
+host2_bmc_pwd: 9YRYBCSX
+host2_bmc_license: 0
+ 
+host2_host_hostname: cpt01host2
+host2_host_fqdn: cpt01host2.cpt01.mea.cdn.orange.com
+host2_host_ip4ad: 172.26.8.166
+host2_host_ip4nm: 255.255.255.240
+host2_host_ip4gw: 172.26.8.161
+ 
+host2_vcache2_hostname: cpt01vcache2
+host2_vcache2_fqdn: cpt01vcache2.cpt01.mea.cdn.orange.com
+host2_vcache2_ip4ad_mgmt: 172.26.8.163
+host2_vcache2_ip4nm_mgmt: 255.255.255.240
+host2_vcache2_mac_mgmt: 00:50:C3:1B:08:A3
+host2_vcache2_ip4ad_client: 255.255.255.243
+host2_vcache2_ip4nm_client: 255.255.255.240
+host2_vcache2_mac_client: 00:50:C3:1B:FF:F3
+host2_vcache2_ip4ad_intra: 192.168.27.2
+host2_vcache2_ip4nm_intra: 255.255.255.252
+host2_vcache2_mac_intra: 00:50:C3:1B:1B:02
+host2_vcache2_ip4gw: 90.84.143.225
+ 
+host2_vrr1_hostname: cpt02vrr1
+host2_vrr1_fqdn: cpt02vrr1.cpt02.mea.cdn.orange.com
+host2_vrr1_ip4ad_mgmt: 172.26.8.164
+host2_vrr1_ip4nm_mgmt: 255.255.255.240
+host2_vrr1_mac_mgmt: 00:50:C3:1B:08:A4
+host2_vrr1_ip4ad_client: 255.255.255.244
+host2_vrr1_ip4nm_client: 255.255.255.240
+host2_vrr1_mac_client: 00:50:C3:1B:FF:F4
+host2_vrr1_ip4gw: 90.84.143.225
+ 
+host2_vwitbe1_hostname: cpt01vwitbe1
+host2_vwitbe1_fqdn: cpt01vwitbe1.cpt01.mea.cdn.orange.com
+host2_vwitbe1_ip4ad_client: 90.84.143.229
+host2_vwitbe1_ip4nm_client: 255.255.255.240
+host2_vwitbe1_mac_client: 00:50:C3:1B:8F:E5
+host2_vwitbe1_ip4gw: 90.84.143.225
+ 
+DNS_primary_ip4: 193.251.253.128
+DNS_secondary_ip4: 193.251.253.129
+DNS_searchdomain: cpt01.mea.cdn.orange.com
+ 
+NTP_primary_fqdn: ntp1.opentransit.net
+NTP_secondary_fqdn: ntp2.opentransit.net
+NTP_tertiary_fqdn: ntp3.opentransit.net
+NTP_quaternary_fqdn: ntp4.opentransit.net
+NTP_quinary_fqdn: ntp5.opentransit.net
+NTP_senary_fqdn: ntp6.opentransit.net
+NTP_septenary_fqdn: ntp7.opentransit.net
+ 
+PVE_alerts_email: "DL OINIS CDN-ENGINEERING oinis.cdn-engineering@orange.com:
+DL OINIS CDN-L3 ibnf.cdn-l3@orange.com:
+DL ENTMC CDN-TAC entmc.cdn-tac@orange.com:
+ZZZ ECS ESMC INTL esmc.intl@orange.com:"
+ 
+subnet_ip4nw_bmc: 172.26.5.144
+subnet_ip4nw_client: 90.84.143.224
+subnet_ip4nw_mgmt: 172.26.8.160
+ 
+switch_ip4ad_vlan1849: 172.26.5.145
+switch_ip4ad_vlan1850: 90.84.143.225
+switch_ip4ad_vlan1851: 172.26.8.161
+ 
+AMC_site1_Name: cPoP-oti-ZA-Cape_Town-01
+AMC_site1_Abb_name: cpt01
+AMC_site1_Login_base: cpt01
+AMC_site1_Bandwidth: 16 Gbps
+ 
+AMC_site2_Name: cPoP-oti-ZA-Cape_Town-02
+AMC_site2_Abb_name: cpt02
+AMC_site2_Login_base: cpt02
+AMC_site2_Bandwidth: 1 Gbps
+ 
+AMC_vcache1_Bandwidth: 8 Gbps
+AMC_vcache2_Bandwidth: 8 Gbps

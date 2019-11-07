@@ -1,0 +1,67 @@
+# This file contains main variables used to instantiate VMs and containers in a Proxmox cPoP.
+#
+# All cPoP parameters are in the 'all' file in the 'group_vars' folder
+#
+
+## hosts resources
+#
+# HW config 1
+#host1_cpu: 40
+#host1_ram: 128
+#host1_hdd: 931
+#host1_ssd: 4471
+#host2_cpu: 40
+#host2_ram: 128
+#host2_hdd: 931
+#host2_ssd: 4471
+# HW config 2
+host1_cpu: 40
+host1_ram: 128
+host1_hdd: 931
+host1_ssd: 7153
+host2_cpu: 40
+host2_ram: 128
+host2_hdd: 931
+host2_ssd: 7153
+
+## host 1 params
+# vm1: vcache1
+host1_vm1_cpu: 80/100 * {{ host1_cpu }}
+host1_vm1_ram: 0.80 * {{ host1_ram }}
+host1_vm1_osdisk_size: 500
+host1_vm1_osdisk_type: qcow2
+host1_vm1_datadisk_size: 0.7 * {{ host1_hdd }}
+host1_vm1_datadisk_type: raw
+# vm2: ppvcache1
+host1_vm2_cpu: 0.15 * {{ host1_cpu }}
+host1_vm2_ram: 0.18 * {{ host1_ram }}
+host1_vm2_osdisk_size: 500
+host1_vm2_osdisk_type: qcow2
+host1_vm2_datadisk_size: 0.09 * {{ host1_hdd }}
+host1_vm2_datadisk_type: raw
+# vm3: vrf1 lxc
+host1_vm3_cpu: "{{ (host1_cpu*0.05)|int|abs }}"
+#host1_vm3_ram: "{{ (host1_ram*0.10)|int|abs }}"
+host1_vm3_ram: 16
+host1_vm3_osdisk_size: 100
+
+## host 2 params
+# vm1: vcache2
+host2_vm1_cpu: 0.80 * {{ host2_cpu }}
+host2_vm1_ram: 0.80 * {{ host2_ram }}
+host2_vm1_osdisk_size: 500
+host2_vm1_osdisk_type: qcow2
+host2_vm1_datadisk_size: 0.7 * {{ host2_hdd }}
+host2_vm1_datadisk_type: raw
+# vm2: vrr1
+host2_vm2_cpu: 0.10 * {{ host2_cpu }}
+host2_vm2_ram: 0.12 * {{ host2_ram }}
+host2_vm2_osdisk_size: 500
+host2_vm2_osdisk_type: qcow2
+# vm3: vwitbe lxc
+host2_vm3_cpu: 0.10 * {{ host2_cpu }}
+host2_vm3_ram: 0.08 * {{ host2_ram }}
+host2_vm3_osdisk_size: 500
+host2_vm3_osdisk_type: qcow2
+
+
