@@ -1,0 +1,7 @@
+---
+- name: cPoP proxmox post installation playbook
+  hosts: myvbox
+
+  roles:
+    - pve-post-install
+    

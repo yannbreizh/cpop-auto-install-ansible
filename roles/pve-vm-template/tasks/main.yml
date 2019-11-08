@@ -5,7 +5,7 @@
 
 # Upload debian template for the vrf container
 
-#- name: Upload debian template
+# - name: Upload debian template
 #  become: yes
 #  shell: |
 #    pveam update
@@ -15,26 +15,32 @@
 - name: Create the vrf container template
   become: yes
   proxmox:
-    vmid: 105
+    vmid: "{{ host1_vm3_vid }}"
     node: "{{ host1_host_hostname }}"
     api_user: root@pam
     api_password: ProxmoxCp0p
     api_host: "{{ host1_host_fqdn }}"
     password: ProxmoxCp0p
-    hostname: "{{ host1_host_hostname }}"
-    cores: 1
+    hostname: "{{ host1_vrf1_hostname }}"
+    cores: "{{ host1_vm3_cpu }}"
     #cpus: "{{ host1_vm3_cpu }}"
     disk: "{{ host1_vm3_osdisk_size }}"
-    #ip_address: "{{ host1_vrf1_ip4ad_client }}"
     memory: "{{ host1_vm3_ram }}"
+    swap: "{{ host1_vm3_ram }}"
     nameserver: "{{ DNS_primary_ip4 }}"
     onboot: yes
-    #pubkey:
+    pubkey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDFYolCFdSV7sXlavem8hHZwV5OaZprCSM8eCHNOsHXcunYuJ4exuPk/0weIkYLUO8hK4ORLl+0xM7hClAQ8rcDU9w1ezVIlaZBYUQ/UJtj8tX9pTbTEaOBcDsSI1kW8xUiL/YTUbu1O8rKp4168pY9ClP3YAd0SRhuYjL0WilxsfvgPC1XHBfvfPQzL5YggFLPDLCw45EBf8CeGcslSONWyCiwlp2/IroNG0nyd/MHotGdMijUvTHYvJ0Ey0/fTDtksoMviD2/hFl/Pf8VQUe8WZApPHOWoSbNicFZl82IaqLEYAWctJh6FO2YSkItjNYXxzlzl7ledRG1a8mPlvAx yann.adam@orange.com'
     searchdomain: "{{ DNS_searchdomain }}"
     storage: local-data
-    #ostemplate: 'Shared:debian-10.0-standard_10.0-1_amd64.tar.gz'
     ostemplate: 'local:vztmpl/debian-10.0-standard_10.0-1_amd64.tar.gz'
-    #netif: '{"net0":"name=eth0,gw=190.84.143.225,ip=90.84.143.230/28,bridge=vmbr0"}'
-    netif: '{"net0":"name=eth0,gw=190.84.143.225,ip={{ host1_vrf1_ip4ad_client }}/28,bridge=vmbr0"}'
+    netif: '{"net0":"name=eth0,hwaddr={{ host1_vrf1_mac_client }},gw={{ host1_vrf1_ip4gw }},ip={{ host1_vrf1_ip4ad_client }}/28,bridge={{ host1_vm3_nic0_bridge }}"}'
     
-
+# Start the vrf container
+- name: Start the vrf container
+  become: yes
+  proxmox:
+    vmid: "{{ host1_vm3_vid }}"
+    api_user: root@pam
+    api_password: ProxmoxCp0p
+    api_host: "{{ host1_host_fqdn }}"
+    state: started

@@ -1,6 +1,6 @@
 ---
 - name: cPoP VMs templates intantiation playbook
-  hosts: cpt
+  hosts: cpt_hosts
   gather_facts: no
 
   roles:

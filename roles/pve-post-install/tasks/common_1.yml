@@ -156,10 +156,35 @@
       - '!any'
   register: allfacts
 
+- name: Network intefaces selection python script
+  become: yes
+  script: network-conf.py {{ ansible_facts }}
+  register: output
+
+- debug: var=output.stdout_lines
 
 - debug:
     msg:
-    - "allfacts: {{ ansible_facts | dict2items | selectattr('value.ipv4', 'defined') | map(attribute='value') | list }}"
+    - "1---- Network interfaces: {{ ansible_interfaces }}"
+    - "2---- inventory_hostname: {{ inventory_hostname }}"
+
+- debug:
+    msg: "{{ ansible_facts | dict2items | selectattr('value.macaddress', 'defined') | map(attribute='value') }}"
+  register: interfaces_facts
+
+- debug:
+    msg: "{% set output = [] %}\
+        {% for result in interfaces_facts %}\
+          {{ output.append( result ~ ' - ' ~ result) }}\
+        {% endfor %}\
+      {{ output }}"
+
+- debug:
+    msg: "{% set output = [] %}\
+        {% for result in interfaces_facts %}\
+          {{ output.append( result.macaddress ~ ' - ' ~ result.interface) }}\
+        {% endfor %}\
+      {{ output }}"
 
 - name: define traditional ethernet facts
   set_fact:
