@@ -1,0 +1,8 @@
+---
+- name: cPoP vrf container install playbook
+  hosts: cpt_vrf
+  gather_facts: no
+
+  roles:
+    - pve-vrf-install
+    

@@ -1,0 +1,117 @@
+#
+# This file lists the tasks that are executed on the host1 of a cPoP cluster to install a FRR service.
+#
+---
+
+#
+# Container initialization
+#
+# Configure apt proxy
+- name: Configure apt proxy
+  become: yes
+  copy:
+    dest: "/etc/apt/apt.conf.d/60proxy"
+    content: |
+      Acquire::http::Proxy "http://90.84.143.118:8080";
+      Acquire::https::proxy "http://90.84.143.118:8080";
+
+# Update repositories
+- name: Update repositories
+  become: yes
+  apt:
+    update_cache: yes
+    dpkg_options: 'force-confold,force-confdef'
+
+# Upgrade repositories
+- name: Upgrade repositories
+  become: yes
+  apt:
+    upgrade: yes
+    dpkg_options: 'force-confold,force-confdef'
+
+# Install vrf packages
+- name: "Install vrf packages. THIS MAY TAKE A WHILE..."
+  become: yes
+  apt:
+    name: "{{ vrf_packages }}"
+    dpkg_options: 'force-confold,force-confdef'
+  vars:
+    vrf_packages:
+    - frr
+
+# Configure proxy
+# - name: Configure proxy
+#     copy:
+#       dest: "/etc/environment"
+#       content: |
+#         export http_proxy=http://90.84.143.118:8080
+#         export https_proxy=http://90.84.143.118:8080
+
+#
+# FRR config
+#
+
+# Configure FRR daemons
+- name: Configure FRR daemons
+  become: yes
+  replace:
+    path: /etc/frr/daemons
+    regexp: 'bgpd=no'
+    replace: 'bgpd=yes'
+
+# - name: Configure FRR daemons
+#   become: yes
+#   copy:
+#     backup: yes
+#     dest: "/etc/frr/daemons"
+#     content: |
+#       bgpd=yes
+#       vtysh_enable=yes
+#       bgpd_options="   -A 127.0.0.1"
+      
+# Configure FRR bgpd daemon
+- name: Configure FRR bgpd daemon
+  become: yes
+  copy:
+    backup: yes
+    dest: "/etc/frr/frr.conf"
+    content: |
+      router bgp 328126
+      bgp router-id {{ host1_vrf1_ip4ad_client }}
+      no redistribute kernel
+      no redistribute connected
+      no redistribute static
+      no redistribute rip
+      no redistribute ospf
+      bgp dampening 15 750 2000 60
+      !
+      neighbor 90.84.143.104 remote-as 5511
+      neighbor 90.84.143.104 ebgp-multihop 255
+      neighbor 90.84.143.104 next-hop-self
+       
+# Restart FRR
+- name: Restart FRR
+  become: yes
+  service:
+    name: frr
+    state: restarted
+      
+# # Configure BGP neighbors
+# - name: Configure BGP neighbors
+#   become: yes
+#   frr_bgp:
+#     config:
+#       bgp_as: 328126
+#       # ebgp_multihop: 255
+#       # next_hop_self: yes
+#       neighbors:
+#         - neighbor: 90.84.143.92
+#           remote_as: 5511
+#           password: Meacu1p@
+#           description: EBGP_NBR_1
+#           timers:
+#             keepalive: 120
+#             holdtime: 360
+#     operation: merge
+
+
