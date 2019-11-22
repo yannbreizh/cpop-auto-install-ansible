@@ -8,10 +8,11 @@
 # package management
 #
 
-- name: Configure debian/proxmox repos
-  shell:
-    cmd: |
-      sudo bash -c 'cat << EOF > /etc/apt/sources.list
+- name: Configure debian/proxmox repos 1/2
+  become: yes
+  copy:
+    dest: "/etc/apt/sources.list"
+    content: |
       ## NEW CONFIGURATION FOR USING THE OINIS REPO:
       # regular updates
       deb [trusted=yes] http://90.84.143.215/debiandeb10/ ./
@@ -19,12 +20,14 @@
       deb [trusted=yes] http://90.84.143.215/debiansec10/ ./
       # pve enterprise
       deb [trusted=yes] http://90.84.143.215/pvedeb6.0/ ./
-      EOF'
 
-      sudo bash -c 'cat << EOF > /etc/apt/sources.list.d/pve-enterprise.list
+- name: Configure debian/proxmox repos 2/2
+  become: yes
+  copy:
+    dest: "/etc/apt/sources.list.d/pve-enterprise.list"
+    content: |
       ## OLD CONFIGURATION:
       #deb https://enterprise.proxmox.com/debian buster pve-enterprise
-      EOF'
 
 - name: Update repositories
   become: yes
@@ -35,10 +38,15 @@
 - name: Upgrade repositories
   become: yes
   apt:
-    upgrade: yes
+    upgrade: dist
     dpkg_options: 'force-confold,force-confdef'
 
-- name: "Install PVE packages. THIS NAY TAKE A WHILE..."
+# - name: Install aptitude
+#   become: yes
+#   apt:
+#     name: aptitude
+
+- name: Install PVE packages. THIS MAY TAKE A WHILE...
   become: yes
   apt:
     name: "{{ pve_packages }}"
@@ -48,6 +56,7 @@
     - proxmox-ve
     - postfix
     - open-iscsi
+
 
 - name: Remove "os-prober" package (recommended by Proxmox)
   become: yes
@@ -75,6 +84,7 @@
     - iproute2
     - ntpdate
     - parted
+    - python-pip
 
 #
 # disks management
@@ -147,48 +157,112 @@
     regexp: 'NTPSERVERS=.*'
     replace: 'NTPSERVERS="ntp1.opentransit.net ntp2.opentransit.net"'
   
-
-- name: Collect all facts
+# pip package install -> the HTTP proxy is configured in the group_vars
+- name: Install python packages
   become: yes
-  setup:
-    gather_subset:
-      - '!all'
-      - '!any'
-  register: allfacts
+  pip:
+    name: netifaces, scipy
 
-- name: Network intefaces selection python script
+# - name: Create directory for python scripts
+#   become: yes
+#   file: path=/home/ansible/python_scripts
+#     state=directory
+#     owner=ansible
+#     group=ansible
+#     mode=755
+
+# - name: Copy the network-conf python script into the folder
+#   become: yes
+#   copy: 
+#     src=network-conf.py 
+#     dest=/home/ansible/python_scripts/network-conf.py
+#     owner=ansible
+#     group=ansible
+#     mode=777 
+
+- name: Execute network configuration script for the client-serving interface
   become: yes
-  script: network-conf.py {{ ansible_facts }}
-  register: output
+  script: network-conf.py -g3 -n0
+  register: script_out
 
-- debug: var=output.stdout_lines
-
-- debug:
-    msg:
-    - "1---- Network interfaces: {{ ansible_interfaces }}"
-    - "2---- inventory_hostname: {{ inventory_hostname }}"
-
-- debug:
-    msg: "{{ ansible_facts | dict2items | selectattr('value.macaddress', 'defined') | map(attribute='value') }}"
-  register: interfaces_facts
-
-- debug:
-    msg: "{% set output = [] %}\
-        {% for result in interfaces_facts %}\
-          {{ output.append( result ~ ' - ' ~ result) }}\
-        {% endfor %}\
-      {{ output }}"
-
-- debug:
-    msg: "{% set output = [] %}\
-        {% for result in interfaces_facts %}\
-          {{ output.append( result.macaddress ~ ' - ' ~ result.interface) }}\
-        {% endfor %}\
-      {{ output }}"
-
-- name: define traditional ethernet facts
+- name: Set a new cient-serving interface variable
   set_fact:
-    ansible_eth: "{% set ansible_eth = ansible_eth|default([]) + [hostvars[inventory_hostname]['ansible_' + item]] %}{{ ansible_eth|list }}"
-  when: hostvars[inventory_hostname]['ansible_' + item]['type'] == 'ether'
-  with_items:
-    - "{{ hostvars[inventory_hostname]['ansible_interfaces'] }}"
+    itf_client: "{{script_out.stdout | trim}}"
+
+- debug: var=itf_client
+
+- name: ensure the client-serving interface is properly configured
+  fail:
+    msg: "network-script: error while selecting the client interface"
+  when: "'none' in itf_client"
+  
+- name: Execute network configuration script for the intrasite interface
+  become: yes
+  script: network-conf.py -g3 -n1
+  register: script_out
+
+- name: Set a new intrasite interface variable
+  set_fact:
+    itf_intra: "{{script_out.stdout | trim}}"
+
+- debug: var=itf_intra
+
+- name: Ensure the intrasite interface is properly configured
+  fail:
+    msg: "network-script: error while selecting the client interface"
+  when: "'none' in itf_intra"
+  
+- name: Remove 'iface ens2f0 inet manual' kind of lines in the interfaces network configuration file (client-serving)
+  become: yes
+  replace:
+    backup: yes
+    path: /etc/network/interfaces
+    regexp: "iface {{itf_client}} inet manual"
+    replace: ''
+
+- name: Remove 'iface ens2f0 inet manual' kind of lines in the interfaces network configuration file (intrasite)
+  become: yes
+  replace:
+    backup: yes
+    path: /etc/network/interfaces
+    regexp: "iface {{itf_intra}} inet manual"
+    replace: ''
+
+- name: Configure linux bridge in the interfaces network configuration file
+  become: yes
+  blockinfile:
+    path: /etc/network/interfaces
+    block: |
+      iface {{itf_client}} inet manual
+      auto vmbr1
+      iface vmbr1 inet manual
+        bridge_ports {{itf_client}}
+        bridge_stp off
+        bridge_fd 0
+        bridge_maxwait 0
+              
+      iface {{itf_intra}} inet manual
+      auto vmbr2
+      iface vmbr2 inet manual
+        bridge_ports {{itf_intra}}
+        bridge_stp off
+        bridge_fd 0
+        bridge_maxwait 0
+
+
+
+ADD VMBR0 CONFIG
+
+#         auto lo
+# iface lo inet loopback
+
+# # The primary network interface
+# iface enp0s10 inet manual
+# auto vmbr0
+# iface vmbr0 inet static
+#   address 192.168.10.35/24
+#   gateway 192.168.10.1
+#   bridge_ports enp0s10
+#   bridge_stp off
+#   bridge_fd 0
+#   bridge_maxwait 0

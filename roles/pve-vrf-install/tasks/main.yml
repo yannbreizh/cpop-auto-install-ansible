@@ -76,6 +76,12 @@
     backup: yes
     dest: "/etc/frr/frr.conf"
     content: |
+      ip prefix-list MATCH_ALL permit 0.0.0.0/0
+      !
+      route-map AMC_PREPROD_in permit 10
+      match ip address prefix-list MATCH_ALL 
+      set local-preference 500
+      !
       router bgp 328126
       bgp router-id {{ host1_vrf1_ip4ad_client }}
       no redistribute kernel
@@ -88,6 +94,8 @@
       neighbor 90.84.143.104 remote-as 5511
       neighbor 90.84.143.104 ebgp-multihop 255
       neighbor 90.84.143.104 next-hop-self
+      neighbor 90.84.143.104 route-map AMC_PREPROD_in in
+      neighbor 90.84.143.104 description Peer to AMC_PREPROD
        
 # Restart FRR
 - name: Restart FRR

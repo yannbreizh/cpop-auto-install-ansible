@@ -6,14 +6,14 @@
 ## hosts resources
 #
 # HW config 1
-#host1_cpu: 40
-#host1_ram: 128
-#host1_hdd: 931
-#host1_ssd: 4471
-#host2_cpu: 40
-#host2_ram: 128
-#host2_hdd: 931
-#host2_ssd: 4471
+# host1_cpu: 40
+# host1_ram: 128
+# host1_hdd: 931
+# host1_ssd: 4471
+# host2_cpu: 40
+# host2_ram: 128
+# host2_hdd: 931
+# host2_ssd: 4471
 # HW config 2
 host1_cpu: 40
 host1_ram: 128
@@ -27,9 +27,8 @@ host2_ssd: 7153
 ## host 1 params
 # vm1: vcache1
 host1_vm1_vid: 101
-host1_vm1_cpu: "{{ (host1_cpu*0.8)|int|abs }}"
-ram11: "{{ (host1_ram*0.8*1024)|int|abs }}"
-host1_vm1_ram: '{% if ram11|int >= 512 %} ram11 {% else %} 512 {% endif %}'
+host1_vm1_cpu: 32
+host1_vm1_ram: "{{ 104*1024 }}"
 host1_vm1_osdisk_size: 500
 host1_vm1_osdisk_type: qcow2
 host1_vm1_datadisk_size: "{{ (host1_hdd*0.7)|int|abs }}"
@@ -40,12 +39,11 @@ host1_vm1_nic2_bridge: vmbr2
 
 # vm2: ppvcache1
 host1_vm2_vid: 102
-host1_vm2_cpu: "{{ (host1_cpu*0.15)|int|abs }}"
-ram12: "{{ (host1_ram*0.2*1024)|int|abs }}"
-host1_vm2_ram: '{% if ram12|int >= 512 %} ram12 {% else %} 512 {% endif %}'
+host1_vm2_cpu: 8
+host1_vm2_ram: "{{ 22*1024 }}"
 host1_vm2_osdisk_size: 500
 host1_vm2_osdisk_type: qcow2
-host1_vm2_datadisk_size: "{{ (host1_hdd*0.09)|int|abs }}"
+host1_vm2_datadisk_size: "{{ (host1_hdd*0.10)|int|abs }}"
 host1_vm2_datadisk_type: raw
 host1_vm2_nic0_bridge: vmbr0
 host1_vm2_nic1_bridge: vmbr1
@@ -53,18 +51,16 @@ host1_vm2_nic1_bridge: vmbr1
 # vm3: vrf1 lxc
 host1_vm3_vid: 113
 #host1_vm3_vid: 103
-host1_vm3_cpu: "{{ (host1_cpu*0.05)|int|abs }}"
-ram13: "{{ (host1_ram*0.10*1024)|int|abs }}"
-host1_vm3_ram: '{% if ram13|int >= 512 %} {{ ram13 }} {% else %} 512 {% endif %}'
+host1_vm3_cpu: 1
+host1_vm3_ram: "{{ 2*1024 }}"
 host1_vm3_osdisk_size: 100
 host1_vm3_nic0_bridge: vmbr1
 
 ## host 2 params
 # vm1: vcache2
 host2_vm1_vid: 201
-host2_vm1_cpu: "{{ (host2_cpu*0.8)|int|abs }}"
-ram21: "{{ (host2_ram*0.8*1024)|int|abs }}"
-host2_vm1_ram: '{% if ram21|int >= 512 %} ram21 {% else %} 512 {% endif %}'
+host2_vm1_cpu: 32
+host2_vm1_ram: "{{ 104*1024 }}"
 host2_vm1_osdisk_size: 500
 host2_vm1_osdisk_type: qcow2
 host2_vm1_datadisk_size: "{{ (host2_hdd*0.7)|int|abs }}"
@@ -75,9 +71,8 @@ host2_vm1_nic2_bridge: vmbr2
 
 # vm2: vrr1
 host2_vm2_vid: 202
-host2_vm2_cpu: "{{ (host2_cpu*0.10)|int|abs }}"
-ram22: "{{ (host2_ram*0.1*1024)|int|abs }}"
-host2_vm2_ram: '{% if ram22|int >= 512 %} ram22 {% else %} 512 {% endif %}'
+host2_vm2_cpu: 4
+host2_vm2_ram: "{{ 16*1024 }}"
 host2_vm2_osdisk_size: 500
 host2_vm2_osdisk_type: qcow2
 host2_vm2_nic0_bridge: vmbr0
@@ -85,9 +80,8 @@ host2_vm2_nic1_bridge: vmbr1
 
 # vm3: vwitbe lxc
 host2_vm3_vid: 203
-host2_vm3_cpu: "{{ (host2_cpu*0.10)|int|abs }}"
-ram23: "{{ (host2_ram*0.1*1024)|int|abs }}"
-host2_vm3_ram: '{% if ram23|int >= 512 %} ram23 {% else %} 512 {% endif %}'
+host2_vm3_cpu: 4
+host2_vm3_ram: "{{ 8*1024 }}"
 host2_vm3_osdisk_size: 500
 host2_vm3_osdisk_type: qcow2
 host2_vm3_nic0_bridge: vmbr1
