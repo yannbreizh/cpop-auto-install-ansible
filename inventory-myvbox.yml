@@ -1,5 +1,8 @@
-[myvbox]
+[cpop1]
 deb10vm1 ansible_ssh_host=192.168.10.35
+
+[cpop2]
+deb10vm2 ansible_ssh_host=192.168.10.36
 
 [all:vars]
 ansible_connection=ssh

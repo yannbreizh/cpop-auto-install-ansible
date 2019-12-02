@@ -1,0 +1,11 @@
+---
+- name: cPoP proxmox post installation playbook - Host1
+  hosts: cpop1
+  vars:
+    select_host: host1
+    datadisk: sdb
+    vmbr0_ip4: "{{host1_host_ip4ad}}{{host1_host_ip4nm2}}"
+    vmbr0_gw4: "{{host1_host_ip4gw}}"
+  roles:
+    - pve-post-install
+    

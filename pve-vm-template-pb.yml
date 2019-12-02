@@ -1,8 +1,0 @@
----
-- name: cPoP VMs templates intantiation playbook
-  hosts: cpt_hosts
-  gather_facts: no
-
-  roles:
-    - pve-vm-template
-    

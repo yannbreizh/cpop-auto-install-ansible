@@ -7,9 +7,9 @@
 # select_host:
 #   - this variable defines wich host is to be configured
 #   - allowed values: host1, host2
-select_host: host1
+select_host111: host1
 
 #
 # global variables common to both hosts
 #
-datadisk: sdb
+datadisk111: sdb

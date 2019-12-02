@@ -1,5 +1,5 @@
 #
-# This file lists the very first tasks that are executed just after the server has been installed with the Debian preseed ISO file.
+# This file lists the tasks to be executed just after the server has been installed with the Debian preseed ISO file.
 # These tasks are common to both host1 and host2
 #
 ---
@@ -41,11 +41,6 @@
     upgrade: dist
     dpkg_options: 'force-confold,force-confdef'
 
-# - name: Install aptitude
-#   become: yes
-#   apt:
-#     name: aptitude
-
 - name: Install PVE packages. THIS MAY TAKE A WHILE...
   become: yes
   apt:
@@ -56,7 +51,6 @@
     - proxmox-ve
     - postfix
     - open-iscsi
-
 
 - name: Remove "os-prober" package (recommended by Proxmox)
   become: yes
@@ -90,34 +84,32 @@
 # disks management
 #
 
-- name: Config disks
+- name: "Config disks: add a new partition #1"
   become: yes
-  parted: device=/dev/sda unit=MiB
-  register: sdb_info
-
-- debug:
-    msg:
-    - "Data disk is: {{ datadisk }}"
-
-- name: "Config disk: create a new empty GPT partition table on disk {{ datadisk }}"
-  become: yes
-  parted:
-    device: /dev/{{ datadisk }}
-    label: gpt
+  parted: 
+    device: /dev/{{datadisk}}
+    unit: MiB
     number: 1
     state: present
-    
-- name: "Config disk: create an ext4 file system on {{ datadisk }}"
+
+- name: "Config disk: create a new empty GPT partition table on disk {{datadisk}}"
+  become: yes
+  parted:
+    device: /dev/{{datadisk}}
+    unit: MiB
+    label: gpt
+
+- name: "Config disk: create an ext4 file system on {{datadisk}}"
   become: yes
   filesystem:
     fstype: ext4
-    device: /dev/{{ datadisk }}
+    device: /dev/{{datadisk}}
     
-- name: "Mount /mnt/data on {{ datadisk }}"
+- name: "Mount /mnt/data on {{datadisk}}"
   become: yes
   mount:
     path: /mnt/data
-    src: /dev/{{ datadisk }}
+    src: /dev/{{datadisk}}
     fstype: mounted
     state: present
 
@@ -161,25 +153,43 @@
 - name: Install python packages
   become: yes
   pip:
-    name: netifaces, scipy
+    name: netifaces, pexpect
 
-# - name: Create directory for python scripts
-#   become: yes
-#   file: path=/home/ansible/python_scripts
-#     state=directory
-#     owner=ansible
-#     group=ansible
-#     mode=755
+- name: Create directory for python scripts
+  become: yes
+  file: path=/home/ansible/python_scripts
+    state=directory
+    owner=ansible
+    group=ansible
+    mode=755
 
-# - name: Copy the network-conf python script into the folder
-#   become: yes
-#   copy: 
-#     src=network-conf.py 
-#     dest=/home/ansible/python_scripts/network-conf.py
-#     owner=ansible
-#     group=ansible
-#     mode=777 
+- name: Copy the network-conf python script into the folder
+  become: yes
+  copy: 
+    src=network-conf.py 
+    dest=/home/ansible/python_scripts/network-conf.py
+    owner=ansible
+    group=ansible
+    mode=777 
 
+# management interface
+- name: Execute network configuration script for the management interface
+  become: yes
+  script: network-conf.py -g1 -n0
+  register: script_out
+
+- name: Set a new management interface variable
+  set_fact:
+    itf_mngt: "{{script_out.stdout | trim}}"
+
+- debug: var=itf_mngt
+
+- name: ensure the management interface is properly configured
+  fail:
+    msg: "network-script: error while selecting the management interface"
+  when: "'none' in itf_mngt"
+
+# client-serving interface
 - name: Execute network configuration script for the client-serving interface
   become: yes
   script: network-conf.py -g3 -n0
@@ -196,6 +206,7 @@
     msg: "network-script: error while selecting the client interface"
   when: "'none' in itf_client"
   
+# intrasite interface
 - name: Execute network configuration script for the intrasite interface
   become: yes
   script: network-conf.py -g3 -n1
@@ -212,27 +223,39 @@
     msg: "network-script: error while selecting the client interface"
   when: "'none' in itf_intra"
   
-- name: Remove 'iface ens2f0 inet manual' kind of lines in the interfaces network configuration file (client-serving)
-  become: yes
-  replace:
-    backup: yes
-    path: /etc/network/interfaces
-    regexp: "iface {{itf_client}} inet manual"
-    replace: ''
+# - name: Remove 'iface ens2f0 inet manual' kind of lines in the interfaces network configuration file (client-serving)
+#   become: yes
+#   replace:
+#     backup: yes
+#     path: /etc/network/interfaces
+#     regexp: "iface {{itf_client}} inet manual"
+#     replace: ''
 
-- name: Remove 'iface ens2f0 inet manual' kind of lines in the interfaces network configuration file (intrasite)
-  become: yes
-  replace:
-    backup: yes
-    path: /etc/network/interfaces
-    regexp: "iface {{itf_intra}} inet manual"
-    replace: ''
+# - name: Remove 'iface ens2f0 inet manual' kind of lines in the interfaces network configuration file (intrasite)
+#   become: yes
+#   replace:
+#     backup: yes
+#     path: /etc/network/interfaces
+#     regexp: "iface {{itf_intra}} inet manual"
+#     replace: ''
 
 - name: Configure linux bridge in the interfaces network configuration file
   become: yes
-  blockinfile:
-    path: /etc/network/interfaces
-    block: |
+  copy:
+    dest: /etc/network/interfaces
+    content: |
+      auto lo
+      iface lo inet loopback
+
+      iface {{itf_mngt}} inet manual
+      auto vmbr0
+      iface vmbr0 inet static
+        address {{vmbr0_ip4}}
+        gateway {{vmbr0_gw4}}
+        bridge_ports {{itf_mngt}}
+        bridge_stp off
+        bridge_fd 0
+
       iface {{itf_client}} inet manual
       auto vmbr1
       iface vmbr1 inet manual
@@ -249,20 +272,8 @@
         bridge_fd 0
         bridge_maxwait 0
 
-
-
-ADD VMBR0 CONFIG
-
-#         auto lo
-# iface lo inet loopback
-
-# # The primary network interface
-# iface enp0s10 inet manual
-# auto vmbr0
-# iface vmbr0 inet static
-#   address 192.168.10.35/24
-#   gateway 192.168.10.1
-#   bridge_ports enp0s10
-#   bridge_stp off
-#   bridge_fd 0
-#   bridge_maxwait 0
+- name: Restart network
+  become: yes 
+  service:
+    name: networking
+    state: restarted

@@ -18,9 +18,14 @@ host1_bmc_license: 0
 
 host1_host_hostname: cpt01host1
 host1_host_fqdn: cpt01host1.cpt01.mea.cdn.orange.com
-host1_host_ip4ad: 172.26.8.165
-host1_host_ip4nm: 255.255.255.240
-host1_host_ip4gw: 172.26.8.161
+#host1_host_ip4ad: 172.26.8.165
+#host1_host_ip4nm1: 255.255.255.240
+#host1_host_ip4nm2: /28
+#host1_host_ip4gw: 172.26.8.161
+host1_host_ip4ad: 192.168.10.35
+host1_host_ip4nm1: 255.255.255.0
+host1_host_ip4nm2: /24
+host1_host_ip4gw: 192.168.10.1
 
 host1_vcache1_hostname: cpt01vcache1
 host1_vcache1_fqdn: cpt01vcache1.cpt01.mea.cdn.orange.com
@@ -63,9 +68,14 @@ host2_bmc_license: 0
 
 host2_host_hostname: cpt01host2
 host2_host_fqdn: cpt01host2.cpt01.mea.cdn.orange.com
-host2_host_ip4ad: 172.26.8.166
-host2_host_ip4nm: 255.255.255.240
-host2_host_ip4gw: 172.26.8.161
+#host2_host_ip4ad: 172.26.8.166
+#host2_host_ip4nm1: 255.255.255.240
+#host2_host_ip4nm2: /28
+#host2_host_ip4gw: 172.26.8.161
+host2_host_ip4ad: 192.168.10.36
+host2_host_ip4nm1: 255.255.255.0
+host2_host_ip4nm2: /24
+host2_host_ip4gw: 192.168.10.1
 
 host2_vcache2_hostname: cpt01vcache2
 host2_vcache2_fqdn: cpt01vcache2.cpt01.mea.cdn.orange.com

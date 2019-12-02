@@ -1,4 +1,12 @@
-- debug:
-    msg:
-    - "Data disk is: {{ datadisk }}"
-    - "Host1 IP is: {{ host1_host_ip4ad }}"
+#
+# This file lists the actions to be executed on the host1 of the cPoP cluster.
+# These actions come after tasks in 'common.yml' are done.
+# They basically create the PVE cluster
+#
+---
+
+# Create the PVE cluster
+- name: Create the PVE cluster
+  become: yes
+  shell: |
+    pvecm create cluster-cpop

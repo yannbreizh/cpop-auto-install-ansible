@@ -1,4 +1,4 @@
-# execute common tasks (on both host1 and host2) at the really beginning of the installation
-- include: "common_1.yml"
+# execute common tasks (on both host1 and host2) at the beginning of the installation
+- include: "common.yml"
 # execute specific tasks on host1 / host2
-- include: "{{ select_host }}.yml"
+- include: "{{select_host}}.yml"

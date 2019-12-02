@@ -1,7 +1,6 @@
 [za_hosts]
 cpt01host1 ansible_ssh_host=172.26.8.165
 jnb01host1 ansible_ssh_host=172.26.8.181
-cpt01vrf1 ansible_ssh_host=90.84.143.232
 
 [cpt_hosts]
 cpt01host1 ansible_ssh_host=172.26.8.165
@@ -10,7 +9,7 @@ cpt01host1 ansible_ssh_host=172.26.8.165
 jnb01host1 ansible_ssh_host=172.26.8.181
 
 [cpt_vrf]
-cpt01vrf1 ansible_ssh_host=90.84.143.232 ansible_user=root ansible_become=yes
+cpt01vrf1 ansible_ssh_host=197.29.126.6 ansible_user=root ansible_become=yes
 
 [all:vars]
 ansible_connection=ssh

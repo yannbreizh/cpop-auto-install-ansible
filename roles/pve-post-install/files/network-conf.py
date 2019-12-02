@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import sys, os, getopt, netifaces
-from scipy import *
 
 """
 

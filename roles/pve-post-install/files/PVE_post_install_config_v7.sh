@@ -62,16 +62,16 @@ EOF
 echo -e "[  \033[1m\033[32mOK\033[0m  ]  repos update"
 echo "`date` - Done" >> $logfile
 
-# # Configure HTTP proxy to be the one deployed in the dedicated container on Passys
-# echo "Configure HTTP proxy (Passys)..."
-# echo "`date` - Configure HTTP proxy (Passys)..." >> $logfile
-# cat << EOF > /etc/environment
-# export http_proxy=http://90.84.143.118:8080
-# export https_proxy=http://90.84.143.118:8080
-# EOF
-# source /etc/environment
-# echo -e "[  \033[1m\033[32mOK\033[0m  ] HTTP proxy"
-# echo "`date` - Done" >> $logfile
+# Configure HTTP proxy to be the one deployed in the dedicated container on Passys
+echo "Configure HTTP proxy (Passys)..."
+echo "`date` - Configure HTTP proxy (Passys)..." >> $logfile
+cat << EOF > /etc/environment
+export http_proxy=http://90.84.143.118:8080
+export https_proxy=http://90.84.143.118:8080
+EOF
+source /etc/environment
+echo -e "[  \033[1m\033[32mOK\033[0m  ] HTTP proxy"
+echo "`date` - Done" >> $logfile
 
 # Update and upgrade the system
 echo "Update the system..."
@@ -80,8 +80,8 @@ cat << EOF > /etc/export
 export DEBIAN_FRONTEND=noninteractive
 export DEBIAN_PRIORITY=critical
 EOF
-source /etc/export
 apt-get -q -y -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" update >> $logfile
+source /etc/export
 sleep 2
 echo -e "[  \033[1m\033[32mOK\033[0m  ] apt-get update"
 echo "`date` - Done" >> $logfile

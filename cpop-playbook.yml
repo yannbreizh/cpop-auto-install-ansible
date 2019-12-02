@@ -1,7 +1,0 @@
----
-- name: cPoP deployment playbook
-  hosts: batch1
-
-  roles:
-    - pve-post-install
-    

@@ -1,8 +1,0 @@
-[batch1]
-deb10vm1 ansible_ssh_host=192.168.10.35
-
-[all:vars]
-ansible_connection=ssh
-ansible_user=ansible
-ansible_ssh_pass=ansible
-ansible_become=yes

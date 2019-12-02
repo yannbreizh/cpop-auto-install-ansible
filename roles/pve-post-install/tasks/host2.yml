@@ -1,0 +1,26 @@
+#
+# This file lists the actions to be executed on the host2 of the cPoP cluster.
+# These actions come after tasks in 'common.yml' are done.
+# They basically attach the node to the PVE cluster
+#
+---
+
+# Print the host IP
+- debug:
+    msg:
+    - "Host1 IP is: {{cluster_ip}}"
+
+# Add this node to the PVE cluster
+# - name: Add this node to the PVE cluster
+#   become: yes
+#   shell: |
+#     pvecm add {{cluster_ip}}
+
+# Add this node to the PVE cluster
+# Not that good to use the expect with clear passwd, but using SSH keys does not work
+- name: Add this node to the PVE cluster
+  expect:
+    command: pvecm add {{cluster_ip}}
+    responses:
+      (.*)Password for root(.*): "ProxmoxCp0p"
+      (.*)Are you sure you want to continue connecting(.*): "yes"
